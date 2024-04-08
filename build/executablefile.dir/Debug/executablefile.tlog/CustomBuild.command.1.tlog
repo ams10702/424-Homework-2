@@ -1,0 +1,10 @@
+^C:\USERS\ANDRE\ONEDRIVE\DOCUMENTS\PENN STATE\AERSP 424\CODINGHW2\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/andre/OneDrive/Documents/Penn State/AERSP 424/CodingHW2" "-BC:/Users/andre/OneDrive/Documents/Penn State/AERSP 424/CodingHW2/build" --check-stamp-file "C:/Users/andre/OneDrive/Documents/Penn State/AERSP 424/CodingHW2/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

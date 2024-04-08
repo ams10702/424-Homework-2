@@ -1,0 +1,10 @@
+^C:\USERS\ANDRE\ONEDRIVE\DOCUMENTS\PENN STATE\AERSP 424\CODINGHW2\BUILD\CMAKEFILES\B67B19125070E8375DAFD10509DE019B\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/andre/OneDrive/Documents/Penn State/AERSP 424/CodingHW2" "-BC:/Users/andre/OneDrive/Documents/Penn State/AERSP 424/CodingHW2/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/andre/OneDrive/Documents/Penn State/AERSP 424/CodingHW2/build/CodingHW2.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
