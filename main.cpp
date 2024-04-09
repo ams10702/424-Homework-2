@@ -73,7 +73,7 @@ void robot5() {
 }
 // defining 5 identical functions is dumb but I seriously tried to make it work with one function and couldnt
 
-void airplaneApproach(int& landingQueue, bool& talking, int planeNum) {
+void airplaneApproach(int& landingQueue, bool& talking, int planeNum) { //this is incomprehensible but it works
 	m1.lock();
 	std::cout << "Aircraft " << planeNum << " is requesting clearance for landing.\n";
 	m1.unlock();
@@ -88,14 +88,13 @@ void airplaneApproach(int& landingQueue, bool& talking, int planeNum) {
 		std::cout << "Aircraft " << planeNum << " is cleared to land.\n";
 		std::cout << "Runway is now free.\n";
 		m1.unlock();
-	
 	}
-	else if ((m6.try_lock() == false) && landingQueue++ < 3) {
+	else if ((m6.try_lock() == false) && landingQueue++ < 3) { //preincrement makes sure that it goes up before the lock
 		std::unique_lock<std::mutex> ATC(m6);
 		m1.lock();
 		std::cout << "Aircraft " << planeNum << " is in the holding pattern\n";
 		m1.unlock();
-		ATCtalking.wait_for(ATC,std::chrono::seconds(5));
+		ATCtalking.wait_for(ATC,std::chrono::seconds(5)); //avoids having all of them freeze here
 		talking = true;
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		talking = false;
@@ -126,7 +125,7 @@ int main() {
 	ctrlSys.MonitorAndAdjust();
 
 	//Problem 2
-	/*
+	
 	auto startTime = std::chrono::high_resolution_clock::now();
 	std::thread r1(robot1); //jthreads to avoid having to tell them to join later
 	std::thread r2(robot2);
@@ -141,12 +140,12 @@ int main() {
 	auto stopTime = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(stopTime - startTime);
 	std::cout << "Duration was " << duration << " \n";
-	*/
+	
 	//Problem 3
 
 	int queue = 0;
 	bool ATCawake = false;
-	//startTime = std::chrono::high_resolution_clock::now();
+	startTime = std::chrono::high_resolution_clock::now();
 	std::thread airplane1(airplaneApproach, std::ref(queue), std::ref(ATCawake), 1);
 	std::thread airplane2(airplaneApproach, std::ref(queue), std::ref(ATCawake), 2);
 	std::thread airplane3(airplaneApproach, std::ref(queue), std::ref(ATCawake), 3);
@@ -167,8 +166,8 @@ int main() {
 	airplane8.join();
 	airplane9.join();
 	airplane10.join();
-	//stopTime = std::chrono::high_resolution_clock::now();
-	//duration = std::chrono::duration_cast<std::chrono::seconds>(stopTime - startTime);
+	stopTime = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast<std::chrono::seconds>(stopTime - startTime);
 
 
 	//Problem 4 using OpenGL
