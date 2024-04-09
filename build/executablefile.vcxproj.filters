@@ -6,7 +6,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Penn State\AERSP 424\CodingHW2\sensor.h">
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Penn State\AERSP 424\CodingHW2\planeSensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

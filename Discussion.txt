@@ -1,0 +1,7 @@
+Question 5:
+One potential issue is that the robot may immediately pick up the tools again and not allow any other robots to complete their tasks. 
+One simple potential solution is to make each robot wait for some amount of time after finishing, to ensure that the other robots have a 
+chance to pick up the tools first.
+
+Question 6:
+

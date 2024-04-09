@@ -9,10 +9,12 @@
 
 class Sensor {
 public:
-	Sensor();
-	~Sensor();
-	virtual void gatherData();
-	virtual void processData();
+	virtual void gatherData() {
+		std::cout << "Gathering data from sensor \n";
+	};
+	virtual void processData(){
+		std::cout << "Processing data from sensor \n"; 
+	}
 };
 
 class PitotTube : public Sensor {
@@ -23,8 +25,6 @@ public:
 	void processData() {
 		std::cout << "Processing data from pitot tube\n";
 	}
-	PitotTube();
-	~PitotTube();
 };
 
 class Accelerometer : public Sensor {
@@ -35,8 +35,6 @@ public:
 	void processData() {
 		std::cout << "Processing data from accelerometer\n";
 	}
-	Accelerometer();
-	~Accelerometer();
 };
 
 class Altimeter : public Sensor {
@@ -47,14 +45,10 @@ public:
 	void processData() {
 		std::cout << "Processing data from altimeter \n";
 	}
-	Altimeter();
-	~Altimeter();
 };
 
 class sensorFactory {
 public:
-	sensorFactory();
-	~sensorFactory();
 	static std::shared_ptr<Sensor> createSensor(std::string sensor) { //shared pointers b/c im not sure how many need to exist
 		std::shared_ptr<Sensor> sensorPtr = nullptr;
 		if (sensor == "Altimeter"){
@@ -76,8 +70,6 @@ public:
 class AerospaceControlSystem {
 	std::vector<std::shared_ptr<Sensor>> sensors;
 public:
-	AerospaceControlSystem();
-	~AerospaceControlSystem();
 	void addSensor(std::shared_ptr<Sensor> sensor) {
 		sensors.push_back(sensor);
 	}
