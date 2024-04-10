@@ -4,4 +4,5 @@ One simple potential solution is to make each robot wait for some amount of time
 chance to pick up the tools first.
 
 Question 6:
-
+If each of the processes takes time, then it will be more difficult to ensure that multiple planes do not try to simultaneously do them.
+More mutexes would be required, and they would likely need to be paired with more condition variables.

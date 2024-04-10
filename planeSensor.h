@@ -9,9 +9,9 @@
 
 class Sensor {
 public:
-	virtual void gatherData() {
+	virtual void gatherData() { //base sensor class w/ blank virtual functions
 
-	};
+	}
 	virtual void processData(){
 
 	}
@@ -19,7 +19,7 @@ public:
 
 class PitotTube : public Sensor {
 public:
-	void gatherData() {
+	void gatherData() { //pitot tube has defined functions
 		std::cout << "Gathering data from pitot tube\n";
 	}
 	void processData() {
@@ -50,7 +50,7 @@ public:
 class sensorFactory {
 public:
 	static std::shared_ptr<Sensor> createSensor(std::string sensor) { //shared pointers b/c im not sure how many need to exist
-		std::shared_ptr<Sensor> sensorPtr = nullptr;
+		std::shared_ptr<Sensor> sensorPtr = nullptr; 
 		if (sensor == "Altimeter"){
 			sensorPtr = std::make_shared<Altimeter>();
 		}
@@ -75,7 +75,7 @@ public:
 	}
 	void MonitorAndAdjust() {
 		for (int i = 0; i < sensors.size(); i++) {
-			(*sensors.at(i)).gatherData();
+			(*sensors.at(i)).gatherData(); //virtual functions lets you call the correct function from the pointer
 		}
 		for (int i = 0; i < sensors.size(); i++) {
 			(*sensors.at(i)).processData();

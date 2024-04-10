@@ -6,8 +6,9 @@
 #include <chrono>
 #include <atomic>
 #include <condition_variable>
-#include <GLFW/glfw3.h>
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <cmath>
 
 
 std::mutex m1, m2, m3, m4, m5, m6;
@@ -72,6 +73,7 @@ void robot5() {
 	m5.unlock();
 }
 // defining 5 identical functions is dumb but I seriously tried to make it work with one function and couldnt
+// this implementation always does it in the fastest possible manner, but the specific robots vary based on thread timing
 
 void airplaneApproach(int& landingQueue, bool& talking, int planeNum) { //this is incomprehensible but it works
 	m1.lock();
@@ -84,13 +86,13 @@ void airplaneApproach(int& landingQueue, bool& talking, int planeNum) { //this i
 		talking = false;
 		ATC.unlock();
 		ATCtalking.notify_one();
-		m1.lock();
+		m1.lock(); //Unlocks the unique mutex since it just needs to cout some stuff
 		std::cout << "Aircraft " << planeNum << " is cleared to land.\n";
 		std::cout << "Runway is now free.\n";
 		m1.unlock();
 	}
 	else if ((m6.try_lock() == false) && landingQueue++ < 3) { //preincrement makes sure that it goes up before the lock
-		std::unique_lock<std::mutex> ATC(m6);
+		std::unique_lock<std::mutex> ATC(m6); //different instance of unique lock
 		m1.lock();
 		std::cout << "Aircraft " << planeNum << " is in the holding pattern\n";
 		m1.unlock();
@@ -109,7 +111,7 @@ void airplaneApproach(int& landingQueue, bool& talking, int planeNum) { //this i
 	else {
 		m1.lock();
 		std::cout << "Approach pattern full. Aircraft " << planeNum << " is diverting to another airport.\n";
-		m1.unlock();
+		m1.unlock(); //I don't know why this has an error here since nothing ever happens
 	}
 }
 
@@ -117,6 +119,7 @@ void airplaneApproach(int& landingQueue, bool& talking, int planeNum) { //this i
 
 
 int main() {
+	
 	//Problem 1
 	AerospaceControlSystem ctrlSys;
 	ctrlSys.addSensor(sensorFactory::createSensor("Altimeter"));
@@ -139,14 +142,14 @@ int main() {
 	r5.join();
 	auto stopTime = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(stopTime - startTime);
-	std::cout << "Duration was " << duration << " \n";
+	std::cout << "Duration was " << duration.count() << " seconds \n";
 	
 	//Problem 3
 
 	int queue = 0;
 	bool ATCawake = false;
 	startTime = std::chrono::high_resolution_clock::now();
-	std::thread airplane1(airplaneApproach, std::ref(queue), std::ref(ATCawake), 1);
+	std::thread airplane1(airplaneApproach, std::ref(queue), std::ref(ATCawake), 1); //I tried to make a vector of threads but it didn't work
 	std::thread airplane2(airplaneApproach, std::ref(queue), std::ref(ATCawake), 2);
 	std::thread airplane3(airplaneApproach, std::ref(queue), std::ref(ATCawake), 3);
 	std::thread airplane4(airplaneApproach, std::ref(queue), std::ref(ATCawake), 4);
@@ -168,10 +171,63 @@ int main() {
 	airplane10.join();
 	stopTime = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast<std::chrono::seconds>(stopTime - startTime);
+	std::cout << "Duration was " << duration.count() << " seconds \n";
 
-
+	
 	//Problem 4 using OpenGL
 
+	if (!glfwInit()) { //basic error handling code from slides
+		std::cerr << "Failed to initialize GLFW" << std::endl;
+		return -1;
+	}
+
+	GLFWwindow* window = glfwCreateWindow(500, 500, "Sine Curve using OpenGL with GLEW and GLFW", NULL, NULL);
+	if (!window) {
+		std::cerr << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+
+	glfwMakeContextCurrent(window);
+
+	if (glewInit() != GLEW_OK) {
+		std::cerr << "Failed to initialize GLEW" << std::endl;
+		return -1;
+	}
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	while (!glfwWindowShouldClose(window)) {
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glBegin(GL_LINES);
+		// Draw X and Y axis
+		glColor3f(1.0, 1.0, 1.0);
+		glVertex2f(-1.0, 0.0);
+		glVertex2f(1.0, 0.0);
+		glVertex2f(0.0, 1.0);
+		glVertex2f(0.0, -1.0);
+
+		// Plot sine curve
+		glColor3f(0.0, 1.0, 0.0);
+		float xtemp = 0; //records place of previous stuff
+		float ytemp = 0;
+		for (float i = 0; i < 1; i += 0.001) {
+			float x = i;
+			float y = (log(4*i))/4; // I chose the log function because it shows up everywhere, and fundamentally relates
+			//anything that changes with reference to itself, such as the rocket equation.
+			glVertex2f(xtemp, ytemp); //graphs line between previous point and itself
+			glVertex2f(x, y);
+			xtemp = x;
+			ytemp = y;
+		}//thankfully log(0) doesn't break this whole equation
+		glEnd();
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	glfwTerminate();
 
 
 	return 0;
